@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
-public class BloodSplatter : MonoBehaviour
+[Serializable]
+public class BloodSplatter
 {
-    [SerializeField]
-    private Image bloodTexture;
+    [SerializeField] private Image bloodTexture;
 
     private bool displayBlood = false;
 
@@ -13,36 +14,56 @@ public class BloodSplatter : MonoBehaviour
 
     public float bloodTimer = 5;
 
-    private float alphaTimer;
+    private float alphaTimer = 0;
+
+    private float alphaFade;
 
 	// Use this for initialization
-	void Start ()
-    {
-        alphaTimer = bloodTimer;
-        bloodTexture.color = alpha;
-	}
+	//void Start ()
+ //   {
+ //       alphaTimer = bloodTimer;
+ //       bloodTexture.color = alpha;
+	//}
 	
 	// Update is called once per frame
-	void Update ()
+	//void Update ()
+ //   {
+ //       if (Input.GetMouseButtonDown(1))
+ //       {
+ //           sampleTrigger();
+ //       }
+
+ //       // Checks whether to display blood or not
+ //       if (displayBlood)
+ //       {
+ //           //alpha.a = 1f * ((alphaTimer -= Time.deltaTime) / bloodTimer) + (Mathf.Sin(alphaTimer*3) * .15f);
+
+ //           alpha.a = alphaFade + (Mathf.Sin(alphaTimer * 3) * .15f);
+
+ //           //Debug.Log(alpha.a);
+
+ //           bloodTexture.color = alpha;           
+ //       }
+ //   }          
+
+    public void UpdateCondition(float healthCondition)
     {
-        if (Input.GetMouseButtonDown(1))
+        if (healthCondition < 1)
         {
-            sampleTrigger();
-        }
+            alphaFade = 1 - healthCondition;
 
-        // Checks whether to display blood or not
-        if (displayBlood)
-        {
-            alpha.a = 1f * ((alphaTimer -= Time.deltaTime) / bloodTimer) + (Mathf.Sin(alphaTimer*3) * .15f);
+            alpha.a = alphaFade + (Mathf.Sin(alphaTimer * 5) * .15f);
 
-            Debug.Log(alpha.a);
+            alphaTimer += Time.deltaTime;
+
+            if (alphaTimer == Mathf.PI)
+                alphaTimer = 0;
+
+            //Debug.Log(alpha.a);
 
             bloodTexture.color = alpha;
-
-           
         }
-    }          
-
+    }
 
     IEnumerator StopBloodDisplay()
     {
@@ -55,12 +76,14 @@ public class BloodSplatter : MonoBehaviour
         bloodTexture.color = alpha;
     }
 
-    public void sampleTrigger()
-    {
-        displayBlood = true;
+    //public void sampleTrigger()
+    //{
+    //    displayBlood = true;
 
-        alpha.a = 1f;
+    //    alphaTimer = bloodTimer;
 
-        StartCoroutine(StopBloodDisplay());
-    }
+    //    alpha.a = 1f;
+
+    //    StartCoroutine(StopBloodDisplay());
+    //}
 }

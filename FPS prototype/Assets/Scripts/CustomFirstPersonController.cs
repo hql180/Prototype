@@ -6,7 +6,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class CustomFirstPersonController : MonoBehaviour
 {
     [Tooltip("Walking Speed")]
-    public float walkSpeed = 6f;
+    public float walkSpeed = 4f;
 
     [Tooltip("Running Speed")]
     public float runSpeed = 12f;
@@ -14,12 +14,25 @@ public class CustomFirstPersonController : MonoBehaviour
     [Tooltip("Jump Height")]
     public float jumpHeight = 10f;
 
+    [Tooltip("Max Stamina of player used for running")]
+    public float maxStamina = 3f;
+
+    // Tracks current stamina
+    private float currentStamina;
+
+    [Tooltip("Max HP of player")]
+    public int maxHealth = 100;
+
+    private float currentHealth;
+
     public float gravity = 20f;
 
     // Standard FPS mouseLook class used to rotate camera
     [SerializeField] private MouseLook mouseLook;
 
     [SerializeField] private HeadBobber headBob = new HeadBobber();
+
+    [SerializeField] private BloodSplatter bloodSplat = new BloodSplatter();
 
     // Boolean to check whether player is running or walking
     private bool isRunning = false;
@@ -40,6 +53,8 @@ public class CustomFirstPersonController : MonoBehaviour
         FPCamera = Camera.main;
         mouseLook.Init(transform, FPCamera.transform);
         headBob.SetUp(FPCamera);
+        currentStamina = maxStamina;
+        currentHealth = maxHealth;
 	}
 	
 	// Update is called once per frame
@@ -51,29 +66,48 @@ public class CustomFirstPersonController : MonoBehaviour
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             moveDirection = transform.TransformDirection(moveDirection);
 
-            if (Input.GetKey("left shift"))
+            if (Input.GetKey("left shift") && currentStamina > 0 && moveDirection.magnitude > 0)
             {
+                currentStamina -= Time.deltaTime;
                 moveDirection *= runSpeed;
             }
             else
+            {
+                if (maxStamina > currentStamina)
+                    currentStamina += Time.deltaTime;
                 moveDirection *= walkSpeed;
+            }            
 
             if(Input.GetButton("Jump"))
             {
                 moveDirection.y = jumpHeight;
             }
         }
-        
-        headBob.BobHead();
+
+        if(Input.GetMouseButtonDown(1))
+        {
+            takeSomeDamage();
+        }
+
+        if(currentHealth < maxHealth)
+        {
+            currentHealth += (10 * Time.deltaTime);
+            if (currentHealth > maxHealth)
+                currentHealth = maxHealth;
+        }
+
+        bloodSplat.UpdateCondition(currentHealth / maxHealth);
+
+        headBob.BobHead(controller.velocity.magnitude);
+
+        Debug.Log(controller.velocity.magnitude);
 
         moveDirection.y -= gravity * Time.deltaTime;
-        controller.Move(moveDirection * Time.deltaTime);
-
-       
+        controller.Move(moveDirection * Time.deltaTime);       
 	}
 
-    void OnGUI()
+    void takeSomeDamage()
     {
-
+        currentHealth -= 9;
     }
 }

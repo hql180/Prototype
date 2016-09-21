@@ -7,10 +7,10 @@ using System.Collections;
 public class HeadBobber
 {
     [Tooltip("How quickly head bob animation plays")]
-    public float bobSpeed = 10f;
+    public float bobSpeed = 1f;
 
     [Tooltip("Amount of head bob")]
-    public float bobAmount = .3f;
+    public float bobAmount = .2f;
 
     [Tooltip("Smooths transition between moving and not moving")]
     public float transitionSpeed = 10f;
@@ -31,11 +31,12 @@ public class HeadBobber
     }
 
     // Bobs head, call in update
-    public void BobHead()
+    public void BobHead(float speedModifier)
     {
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) //moving
         {
-            timer += bobSpeed * Time.deltaTime;
+            // Scales headBob speed depending on how fast player is moving
+            timer += bobSpeed * speedModifier * Time.deltaTime;
 
             //use the timer value to set the position
             Vector3 newPosition = new Vector3(Mathf.Cos(timer) * bobAmount, 
