@@ -16,35 +16,7 @@ public class BloodSplatter
 
     private float alphaTimer = 0;
 
-    private float alphaFade;
-
-	// Use this for initialization
-	//void Start ()
- //   {
- //       alphaTimer = bloodTimer;
- //       bloodTexture.color = alpha;
-	//}
-	
-	// Update is called once per frame
-	//void Update ()
- //   {
- //       if (Input.GetMouseButtonDown(1))
- //       {
- //           sampleTrigger();
- //       }
-
- //       // Checks whether to display blood or not
- //       if (displayBlood)
- //       {
- //           //alpha.a = 1f * ((alphaTimer -= Time.deltaTime) / bloodTimer) + (Mathf.Sin(alphaTimer*3) * .15f);
-
- //           alpha.a = alphaFade + (Mathf.Sin(alphaTimer * 3) * .15f);
-
- //           //Debug.Log(alpha.a);
-
- //           bloodTexture.color = alpha;           
- //       }
- //   }          
+    private float alphaFade;         
 
     public void UpdateCondition(float healthCondition)
     {
@@ -63,6 +35,11 @@ public class BloodSplatter
 
             bloodTexture.color = alpha;
         }
+        else
+        {
+            alpha.a = 0;
+            bloodTexture.color = alpha;
+        }
     }
 
     IEnumerator StopBloodDisplay()
@@ -75,15 +52,4 @@ public class BloodSplatter
 
         bloodTexture.color = alpha;
     }
-
-    //public void sampleTrigger()
-    //{
-    //    displayBlood = true;
-
-    //    alphaTimer = bloodTimer;
-
-    //    alpha.a = 1f;
-
-    //    StartCoroutine(StopBloodDisplay());
-    //}
 }

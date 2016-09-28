@@ -12,6 +12,8 @@ public class Bullet : MonoBehaviour
     [Tooltip("How long bullet remains active before despawn")]
     public float maxLifeTime = 5;
 
+    public Collider bulletCollider;
+
     // Timer on bullet
     private float lifeTime;
 
@@ -20,6 +22,7 @@ public class Bullet : MonoBehaviour
     {
         // Initializes timer
         lifeTime = maxLifeTime;
+        bulletCollider = GetComponent<Collider>();
 	}
 	
     void OnCollisionEnter()

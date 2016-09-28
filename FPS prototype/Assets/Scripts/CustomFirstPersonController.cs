@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.Characters.FirstPerson;
+using System.Collections.Generic;
 
 
 public class CustomFirstPersonController : MonoBehaviour
@@ -20,12 +21,16 @@ public class CustomFirstPersonController : MonoBehaviour
     // Tracks current stamina
     private float currentStamina;
 
+    private float exhaustedTimer = 0;
+
     [Tooltip("Max HP of player")]
     public int maxHealth = 100;
 
     private float currentHealth;
 
     public float gravity = 20f;
+
+    public List<Item> inventory = new List<Item>();
 
     // Standard FPS mouseLook class used to rotate camera
     [SerializeField] private MouseLook mouseLook;
@@ -55,7 +60,8 @@ public class CustomFirstPersonController : MonoBehaviour
         headBob.SetUp(FPCamera);
         currentStamina = maxStamina;
         currentHealth = maxHealth;
-	}
+        
+    }
 	
 	// Update is called once per frame
 	void Update ()
@@ -66,16 +72,23 @@ public class CustomFirstPersonController : MonoBehaviour
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             moveDirection = transform.TransformDirection(moveDirection);
 
-            if (Input.GetKey("left shift") && currentStamina > 0 && moveDirection.magnitude > 0)
+            if (Input.GetKey("left shift") && 
+                currentStamina > 0 && 
+                moveDirection.magnitude > 0 &&
+                exhaustedTimer <= 0)
             {
                 currentStamina -= Time.deltaTime;
                 moveDirection *= runSpeed;
+
+                if (currentStamina < 0)
+                    exhaustedTimer = 2;
             }
             else
             {
                 if (maxStamina > currentStamina)
                     currentStamina += Time.deltaTime;
                 moveDirection *= walkSpeed;
+                exhaustedTimer -= Time.deltaTime;
             }            
 
             if(Input.GetButton("Jump"))
@@ -106,8 +119,13 @@ public class CustomFirstPersonController : MonoBehaviour
         controller.Move(moveDirection * Time.deltaTime);       
 	}
 
-    void takeSomeDamage()
+    public void takeSomeDamage()
     {
         currentHealth -= 9;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 5);
     }
 }

@@ -42,6 +42,8 @@ public class Shoot : MonoBehaviour
     private float fireTimer = 0;
     private float fireTiming;
 
+    private Collider playerCollider;
+
 
 	// Use this for initialization
 	void Start ()
@@ -52,14 +54,15 @@ public class Shoot : MonoBehaviour
         // Sets timing on bullet fire rate
         fireTiming = 1f / (float)fireRate;
 
+        playerCollider = transform.parent.parent.GetComponent<Collider>();
+
         // Pre-allocating bullets
         projectilePool = new Rigidbody[bulletPool];
         for(int i = 0; i < projectilePool.Length; ++i)
         {
             Rigidbody bullet = Instantiate(projectile) as Rigidbody;
             bullet.gameObject.SetActive(false);
-            bullet.hideFlags = HideFlags.HideInHierarchy;
-            Physics.IgnoreCollision(bullet.GetComponent<Collider>(), transform.parent.parent.GetComponent<Collider>()); // Removes collision between bullet and shooter
+            bullet.hideFlags = HideFlags.HideInHierarchy;            
             projectilePool[i] = bullet;
         }
 	}
@@ -104,6 +107,7 @@ public class Shoot : MonoBehaviour
                 bullet.position = transform.position;
                 bullet.rotation = transform.rotation;
                 bullet.velocity = transform.forward * bulletSpeed;
+                Physics.IgnoreCollision(bullet.GetComponent<Collider>(), playerCollider); // Removes collision between bullet and shooter
                 bullet.GetComponent<Bullet>().ResetLifeTime();
             }
         }
